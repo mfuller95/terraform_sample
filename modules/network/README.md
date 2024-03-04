@@ -1,9 +1,12 @@
 Basic Network Module
 ===========
 
-A terraform module to provide a <resource name> in AWS/AZURE/ETC,ETC.
-
-This should be used an a generic template to be included in every terraform module.
+This terraform modules provides the basics for setting up a new VPC. It includes
+- AWS VPC
+- A 3 tiered subnet setup (Public, Private and Data) with the ability to deploy to multiple AZs
+- Route tables
+- NACL that allows 80 & 443 through each tier by default with the ability to add more ports as needed
+- The ability to deploy VPC endpoints as needed
 
 Module Input Variables
 ----------------------
@@ -19,7 +22,6 @@ Module Input Variables
 - `extra_data_nacl_outbound_ports` - Addtional ports to allow outbount through the NACL
 - `vpc_endpoint_services` - Short names of the AWS services to create vpc endpoints for
 
-vpc_endpoint_services
 Usage
 -----
 
@@ -35,6 +37,7 @@ module "demo" {
 }
 ```
 
+```hcl
 module "demo_vpce" {
   source = "./modules/network"
 
@@ -48,6 +51,7 @@ module "demo_vpce" {
 
   vpc_endpoint_services = ["ec2", "s3"]
 }
+```
 
 
 Outputs
