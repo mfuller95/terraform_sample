@@ -29,7 +29,7 @@ Usage
 module "demo" {
   source = "./modules/network"
 
-  name = "whatever variable you would like to pass"
+  name           = "whatever variable you would like to pass"
   vpc_cidr_block = "10.0.0.0/22"
   num_of_azs     = 3
 
@@ -45,6 +45,7 @@ module "demo_vpce" {
   vpc_cidr_block = "10.0.0.0/22"
   num_of_azs     = 3
 
+  extra_public_nacl_inbound_ports   = [80]
   extra_public_nacl_outbound_ports  = [8080]
   extra_private_nacl_inbound_ports  = [8080]
   extra_private_nacl_outbound_ports = [3309]

@@ -1,10 +1,7 @@
 locals {
   standard_ports = tolist([80, 443])
-  public_inbound_ports = distinct(concat(var.extra_public_nacl_inbound_ports, local.standard_ports))
   public_outbound_ports = distinct(concat(var.extra_public_nacl_outbound_ports, local.standard_ports))
-  private_inbound_ports = distinct(concat(var.extra_private_nacl_inbound_ports, local.standard_ports))
   private_outbound_ports = distinct(concat(var.extra_private_nacl_outbound_ports, local.standard_ports))
-  data_inbound_ports = distinct(concat(var.extra_data_nacl_inbound_ports, local.standard_ports))
   data_outbound_ports = distinct(concat(var.extra_data_nacl_outbound_ports, local.standard_ports))
 }
 
@@ -23,7 +20,7 @@ module "inbound_public_nacl_allow_rules" {
   egress            = false
   rule_action       = "allow"
   cidr_block        = aws_subnet.public[count.index].cidr_block
-  ports             = local.public_inbound_ports
+  ports             = var.extra_public_nacl_inbound_ports
 }
 
 module "inbound_public_nacl_deny_rule" {
@@ -46,7 +43,7 @@ module "outbound_public_nacl_allow_rules" {
   egress            = true
   rule_action       = "allow"
   cidr_block        = aws_subnet.public[count.index].cidr_block
-  ports             = local.public_inbound_ports
+  ports             = local.public_outbound_ports
 }
 
 module "outbound_public_nacl_deny_rule" {
@@ -75,7 +72,7 @@ module "inbound_private_nacl_allow_rules" {
   egress            = false
   rule_action       = "allow"
   cidr_block        = aws_subnet.private[count.index].cidr_block
-  ports             = local.private_inbound_ports
+  ports             = var.extra_private_nacl_inbound_ports
 }
 
 module "inbound_private_nacl_deny_rule" {
@@ -98,7 +95,7 @@ module "outbound_private_nacl_allow_rules" {
   egress            = true
   rule_action       = "allow"
   cidr_block        = aws_subnet.private[count.index].cidr_block
-  ports             = local.private_inbound_ports
+  ports             = local.private_outbound_ports
 }
 
 module "outbound_private_nacl_deny_rule" {
@@ -127,7 +124,7 @@ module "inbound_data_nacl_allow_rules" {
   egress            = false
   rule_action       = "allow"
   cidr_block        = aws_subnet.data[count.index].cidr_block
-  ports             = local.data_inbound_ports
+  ports             = var.extra_data_nacl_inbound_ports
 }
 
 module "inbound_data_nacl_deny_rule" {
@@ -150,7 +147,7 @@ module "outbound_data_nacl_allow_rules" {
   egress            = true
   rule_action       = "allow"
   cidr_block        = aws_subnet.data[count.index].cidr_block
-  ports             = local.data_inbound_ports
+  ports             = local.data_outbound_ports
 }
 
 module "outbound_data_nacl_deny_rule" {

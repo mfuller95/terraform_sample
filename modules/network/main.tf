@@ -86,6 +86,35 @@ resource "aws_route_table_association" "data" {
   route_table_id = aws_route_table.data.id
 }
 
+resource "aws_internet_gateway" "this" {
+  vpc_id = aws_vpc.main.id
+}
+
+resource "aws_eip" "this" {
+  count = var.num_of_azs
+
+  domain           = "vpc"
+}
+
+resource "aws_nat_gateway" "this" {
+  count = var.num_of_azs
+
+  allocation_id = aws_eip.this[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
+}
+
+resource "aws_route" "private_nat" {
+  route_table_id         = aws_route_table.private.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.this[0].id
+}
+
+resource "aws_route" "data_nat" {
+  route_table_id         = aws_route_table.data.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.this[0].id
+}
+
 module "gateway_endpoints" {
   source = "./modules/vpce"
   for_each = {for i in var.vpc_endpoint_services : i => {service_name = i} if contains(local.vpce_gateways, i)}
